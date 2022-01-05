@@ -1,0 +1,41 @@
+CREATE DATABASE zaposlenPoKancelariji;
+USE zaposlenPoKancelariji;
+
+CREATE TABLE kancelarija
+(
+kancelarija_id int auto_increment PRIMARY KEY NOT NULL
+);
+
+CREATE TABLE zaposlenik
+(
+zaposlenik_id int auto_increment NOT NULL,
+PRIMARY KEY (zaposlenik_id),
+ime varchar(50) NOT NULL,
+prezime varchar(50) NOT NULL,
+broj_telefona varchar(50) NOT NULL UNIQUE,
+kancelarija_id int NOT NULL,
+INDEX kanc_ind (kancelarija_id),
+    FOREIGN KEY (kancelarija_id)
+        REFERENCES kancelarija(kancelarija_id)
+        ON UPDATE CASCADE ON DELETE RESTRICT
+);
+INSERT INTO kancelarija ()
+VALUES 
+ (),
+ ();
+
+INSERT INTO zaposlenik (ime, prezime, broj_telefona,kancelarija_id)
+VALUES 
+ ('Aleksa', 'Mikic', '0642223331', 1),
+ ('Nikola', 'Simic', '0642223333', 2),
+ ('Andjela', 'Dinkic', '0622223322', 2);
+
+delimiter //
+CREATE TRIGGER tg_zaposlenik BEFORE INSERT
+ON zaposlenik
+FOR EACH ROW
+BEGIN
+IF (SELECT COUNT(kancelarija_id) FROM zaposlenik WHERE kancelarija_id = NEW.kancelarija_id )>=4 THEN SIGNAL SQLSTATE '50001' SET MESSAGE_TEXT = 'nema mesta';
+END IF;
+END;//
+delimiter ;
